@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Research - LEED</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Favicon links -->
+    <link rel="icon" type="image/x-icon" href="content/favicon/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="content/favicon/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="content/favicon/favicon-16x16.png">
+    <link rel="apple-touch-icon" href="content/favicon/apple-touch-icon.png">
+    <link rel="manifest" href="content/favicon/site.webmanifest">
+    <!-- Preload research icons -->
+    <link rel="preload" as="image" href="content/icon-materials.png">
+    <link rel="preload" as="image" href="content/icon-simulation.png">
+    <link rel="preload" as="image" href="content/icon-engineering.png">
+    <!-- Image preloader script -->
+    <script src="image-preloader.js" defer></script>
+    <!-- Service worker registration -->
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('sw.js').then(function(registration) {
+            console.log('Service Worker registered successfully:', registration);
+          }, function(error) {
+            console.log('Service Worker registration failed:', error);
+          });
+        });
+      }
+    </script>
+    <script>
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in-visible');
+                }
+            });
+        }, observerOptions);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Mobile menu toggle
+            const hamburger = document.getElementById('hamburger');
+            const navLinks = document.getElementById('nav-links');
+            
+            if (hamburger) {
+                hamburger.addEventListener('click', function() {
+                    hamburger.classList.toggle('active');
+                    navLinks.classList.toggle('active');
+                });
+                
+                // Close menu when a link is clicked
+                navLinks.querySelectorAll('a').forEach(link => {
+                    link.addEventListener('click', function() {
+                        hamburger.classList.remove('active');
+                        navLinks.classList.remove('active');
+                    });
+                });
+            }
+
+            // Setup card expansion functionality
+            setupCardExpansion();
+        });
+
+        function setupCardExpansion() {
+            const cards = document.querySelectorAll('.focus-card');
+            cards.forEach(card => {
+                card.style.cursor = 'pointer';
+                card.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const cardIndex = Array.from(cards).indexOf(this);
+                    expandCard(cardIndex);
+                });
+            });
+        }
+
+        function expandCard(index) {
+            const overlay = document.createElement('div');
+            overlay.className = 'expansion-overlay';
+            
+            const expandedContent = [
+                {
+                    title: 'Advanced Materials & Phenomena',
+                    icon: 'content/icon-materials.png',
+                    description: 'Discovery and engineering of novel material systems — ferroelectrics, negative capacitance, and heterostructures — with precisely engineered quantum and electronic properties',
+                    details: [
+                        'Ferroelectric and antiferroelectric materials with engineered switching kinetics',
+                        'Negative capacitance phenomena for ultra-steep subthreshold switching',
+                        'Novel channel materials for increased performance',
+                        'Quantum and transport phenomena in low-dimensional systems',
+                    ],
+                    students: [
+                        { name: 'Steve Volkman', title: 'PhD Student, AS&T', bio: 'Development and Understanding of BEOL Compatible Si Transistors', image: 'content/team/SteveVolkman.png' },
+                        { name: 'Koushik Das', title: 'PhD Student, Chemistry', bio: 'Ferroic Thin Films for Energy-Efficient Logic and Memory', image: 'content/team/KoushikDas.jpg' },
+                        { name: 'Dr. Myeongseop Song', title: 'Postdoctoral Fellow, EECS', bio: 'ALD-grown Ultra-high Density Trench Capacitors', image: 'content/team/MyeongseopSong.jpg' },
+                        { name: 'Dr. Junghyeon Hwang', title: 'Postdoctoral Fellow, EECS', bio: 'Energy-efficient Memory Devices', image: 'content/team/JunghyeonHwang.jpg' }
+                    ]
+                },
+                {
+                    title: 'Theory & Simulation',
+                    icon: 'content/icon-simulation.png',
+                    description: 'First-principles modeling and atomistic simulation to understand emerging physics, electron transport, and device physics at the nanoscale that drives innovation',
+                    details: [
+                        'Density functional theory (DFT) calculations of material properties',
+                        'Molecular dynamics simulations of ferroelectric switching',
+                        'Monte Carlo and Boltzmann transport calculations',
+                        'Multi-scale modeling from atomistic to device level',
+                        'Band structure engineering and electronic property prediction'
+                    ],
+                    students: [
+                        {name: 'Krishna Bhattaram', title: 'PhD Student, EECS', bio: 'Machine Learning for Atomistic Simulations', image: 'content/team/KrishnaBhattaram.png' }
+                    ]
+                },
+                {
+                    title: 'Device Engineering & Characterization',
+                    icon: 'content/icon-engineering.png',
+                    description: 'Precision nanofabrication, experimental validation, and characterization of prototype devices demonstrating breakthrough performance',
+                    details: [
+                        'High performance logic and memory device design',
+                        'Device modeling and simulation using TCAD tools',
+                        'Novel fabrication techniques for nanoscale devices',
+                        'In-house device fabrication and characterization',
+                    ],
+                    students: [
+                        { name: 'Steve Volkman', title: 'PhD Student, AS&T', bio: 'Development and Understanding of BEOL Compatible Si Transistors', image: 'content/team/SteveVolkman.png' },
+                        { name: 'Chia-Chun Lee', title: 'PhD Student, EECS', bio: 'Gate-All-Around NCFET', image: 'content/team/Chia-ChunLee.png' },
+                        { name: 'Ramit Dutta', title: 'PhD Student, EECS', bio: 'Ultrathin Body Ferroelectric FET', image: 'content/team/RamitDutta.jpg' },
+                        { name: 'Richard McManus', title: 'PhD Student, EECS', bio: 'Frequency Scaling in RF SOI MOSFETs', image: 'content/team/RichardMcManus.png' },
+                        { name: 'Kim Pham', title: 'PhD Student, EECS', bio: 'Ultra-high Density 3D Capacitors', image: 'content/team/KimPham.jpg' },
+                        { name: 'Wei-Yang Weng', title: 'PhD Student, EECS', bio: 'FeFET Array for Analog Computing', image: 'content/team/Wei-YangWeng.jpg' },
+                        { name: 'Yonghyeok Son', title: 'PhD Student, EECS', bio: '3D DRAM Characteristics and Process', image: 'content/team/YonghyeokSon.jpg' },
+                        { name: 'Jooseong Yun', title: 'PhD Student, EECS', bio: 'Next Generation Memory', image: 'content/team/JooseongYun.jpg' },
+                        { name: 'Dr. Myeongseop Song', title: 'Postdoctoral Fellow, EECS', bio: 'ALD-grown Ultra-high Density Trench Capacitors', image: 'content/team/MyeongseopSong.jpg' },
+                        { name: 'Dr. Junghyeon Hwang', title: 'Postdoctoral Fellow, EECS', bio: 'Energy-efficient Memory Devices', image: 'content/team/JunghyeonHwang.jpg' },
+                    ]
+                },
+                {
+                    title: 'Unconventional Computing',
+                    icon: 'content/icon-computing.png',
+                    description: 'Exploring novel computing paradigms for high-performance, energy-efficient information processing',
+                    details: [
+                        'NP-hard optimization problem solving using hardware accelerators',
+                        'Ising model implementations with emerging devices',
+                        'Stochastic and probabilistic computing models',
+                        'Ground state search and quantum-inspired algorithms'
+                    ],
+                    students: [
+                        { name: 'Chirag Garg', title: 'PhD Student, EECS', bio: 'Hardware Accelerators for NP-hard Optimization Problems', image: 'content/team/ChiragGarg.jpg' },
+                        { name: 'Krishna Bhattaram', title: 'PhD Student, EECS', bio: 'Machine Learning for Atomistic Simulations', image: 'content/team/KrishnaBhattaram.png' },
+                        { name: 'Aniket Sadishiva', title: 'PhD Student, EECS', bio: 'Hardware Accelerators for Optimization Problems', image: 'content/team/AniketSadishiva.jpg' }
+                    ]
+                }
+            ];
+
+            const content = expandedContent[index];
+            let currentStartIndex = 0;
+
+            function renderStudentCarousel() {
+                const numToShow = Math.min(3, content.students.length);
+                const visibleStudents = [];
+                for (let i = 0; i < numToShow; i++) {
+                    const idx = (currentStartIndex + i) % content.students.length;
+                    visibleStudents.push(content.students[idx]);
+                }
+
+                return `
+                    <div class="student-carousel">
+                        <h3>Team Members</h3>
+                        <div class="carousel-wrapper">
+                            <button class="carousel-arrow carousel-prev" aria-label="Previous students">&lt;</button>
+                            <div class="carousel-content">
+                                <div class="carousel-container">
+                                    <div class="students-grid">
+                                        ${visibleStudents.map(student => `
+                                            <div class="student-card-carousel">
+                                                <img src="${student.image}" alt="${student.name}" class="student-carousel-image">
+                                                <h4>${student.name}</h4>
+                                                <p class="student-title">${student.title}</p>
+                                                <p class="student-bio">${student.bio}</p>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                                <div class="carousel-indicators">
+                                    ${Array.from({ length: content.students.length }).map((_, i) => `<span class="indicator ${i === currentStartIndex ? 'active' : ''}" data-index="${i}"></span>`).join('')}
+                                </div>
+                            </div>
+                            <button class="carousel-arrow carousel-next" aria-label="Next students">&gt;</button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            overlay.innerHTML = `
+                <div class="expansion-modal">
+                    <button class="close-button">&times;</button>
+                    <div class="modal-content">
+                        <div class="modal-icon-wrapper">
+                            <img src="${content.icon}" alt="${content.title}" class="modal-icon">
+                        </div>
+                        <h2>${content.title}</h2>
+                        <p class="modal-description">${content.description}</p>
+                        <h3>Key Focus Areas:</h3>
+                        <ul class="modal-details">
+                            ${content.details.map(detail => `<li>${detail}</li>`).join('')}
+                        </ul>
+                        ${renderStudentCarousel()}
+                    </div>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+
+            function updateCarousel() {
+                const modalContent = overlay.querySelector('.modal-content');
+                const focusAreasList = `<ul class="modal-details">
+                    ${content.details.map(detail => `<li>${detail}</li>`).join('')}
+                </ul>`;
+                
+                modalContent.innerHTML = `
+                    <button class="close-button">&times;</button>
+                    <div class="modal-icon-wrapper">
+                        <img src="${content.icon}" alt="${content.title}" class="modal-icon">
+                    </div>
+                    <h2>${content.title}</h2>
+                    <p class="modal-description">${content.description}</p>
+                    <h3>Key Focus Areas:</h3>
+                    ${focusAreasList}
+                    ${renderStudentCarousel()}
+                `;
+
+                // Reattach event listeners
+                attachCarouselListeners();
+                const newCloseBtn = modalContent.querySelector('.close-button');
+                newCloseBtn.addEventListener('click', function() {
+                    overlay.remove();
+                });
+            }
+
+            function attachCarouselListeners() {
+                const newPrevBtn = overlay.querySelector('.carousel-prev');
+                const newNextBtn = overlay.querySelector('.carousel-next');
+                const newIndicators = overlay.querySelectorAll('.indicator');
+
+                newPrevBtn.addEventListener('click', () => {
+                    currentStartIndex = (currentStartIndex - 1 + content.students.length) % content.students.length;
+                    updateCarousel();
+                });
+
+                newNextBtn.addEventListener('click', () => {
+                    currentStartIndex = (currentStartIndex + 1) % content.students.length;
+                    updateCarousel();
+                });
+
+                newIndicators.forEach(indicator => {
+                    indicator.addEventListener('click', () => {
+                        currentStartIndex = parseInt(indicator.dataset.index);
+                        updateCarousel();
+                    });
+                });
+            }
+
+            // Initial event listeners
+            attachCarouselListeners();
+
+            const closeBtn = overlay.querySelector('.close-button');
+            closeBtn.addEventListener('click', function() {
+                overlay.remove();
+            });
+
+            // Close on overlay click
+            overlay.addEventListener('click', function(e) {
+                if (e.target === overlay) {
+                    overlay.remove();
+                }
+            });
+
+            // Close on Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.body.contains(overlay)) {
+                    overlay.remove();
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <a href="index.html" class="logo-link">
+                        <h1>LEED</h1>
+                        <p class="tagline">Laboratory for Emerging and Exploratory Devices</p>
+                    </a>
+                </div>
+                <button class="hamburger" id="hamburger">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-links" id="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="research.html">Research</a></li>
+                    <li><a href="team.html">Team</a></li>
+                    <li><a href="activities.html">Activities</a></li>
+                    <li><a href="publications.html">Publications</a></li>
+                    <li><a href="news.html">News</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="page-hero">
+        <div class="hero-video-bg">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="container hero-container">
+            <div class="hero-content fade-in">
+                <p class="hero-overline">OUR WORK</p>
+                <h1 class="hero-title">Research</h1>
+                <p class="hero-tagline">Pushing the boundaries of physics and device engineering</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Research Focus -->
+    <section class="research-focus">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2 class="section-title">What We Do</h2>
+                <p class="section-description">Four pillars of innovation in device engineering</p>
+            </div>
+            <div class="focus-grid">
+                <div class="focus-card fade-in">
+                    <div class="focus-icon-wrapper">
+                        <img src="content/icon-materials.png" alt="Advanced Materials & Phenomena" class="focus-icon">
+                    </div>
+                    <h3>Advanced Materials & Phenomena</h3>
+                    <p>Discovery and engineering of novel material systems — from ferroelectrics, negative capacitance, andheterostructures—with precisely engineered quantum and electronic properties</p>
+                </div>
+                <div class="focus-card fade-in">
+                    <div class="focus-icon-wrapper">
+                        <img src="content/icon-simulation.png" alt="Theory & Simulation" class="focus-icon">
+                    </div>
+                    <h3>Theory & Simulation</h3>
+                    <p>First-principles modeling and atomistic simulation to understand emerging physics, electron transport, and device physics at the nanoscale that drives innovation</p>
+                </div>
+                <div class="focus-card fade-in">
+                    <div class="focus-icon-wrapper">
+                        <img src="content/icon-engineering2.png" alt="Device Engineering & Characterization" class="focus-icon">
+                        <img src="content/icon-engineering.png" alt="Device Engineering & Characterization" class="focus-icon">
+                    </div>
+                    <h3>Device Engineering & Characterization</h3>
+                    <p>Precision nanofabrication, experimental validation, and characterization of prototype devices demonstrating breakthrough performance</p>
+                </div>
+                <div class="focus-card fade-in">
+                    <div class="focus-icon-wrapper">
+                        <img src="content/icon-computing.png" alt="Unconventional Computing" class="focus-icon">
+                    </div>
+                    <h3>Unconventional Computing</h3>
+                    <p>Exploring novel computing paradigms for high-performance, energy-efficient information processing</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Research Areas
+    <section class="research-areas">
+        <div class="container">
+            <div class="section-header fade-in">
+                <h2 class="section-title">Research Frontiers</h2>
+                <p class="section-description">Where physics meets device innovation</p>
+            </div>
+            <div class="areas-grid">
+                <div class="area-item fade-in">
+                    <div class="area-number">01</div>
+                    <h3>Negative Capacitance</h3>
+                    <p>Pioneering work on negative capacitance phenomena in ferroelectric and ferrimagnetic materials for ultra-low power electronics and enhanced device performance</p>
+                </div>
+                <div class="area-item fade-in">
+                    <div class="area-number">02</div>
+                    <h3>Ferroelectric & Multiferroic Materials</h3>
+                    <p>Exploring ferroelectric materials for memory and logic applications with superior energy efficiency and unprecedented switching speeds</p>
+                </div>
+                <div class="area-item fade-in">
+                    <div class="area-number">03</div>
+                    <h3>Electron Device Physics</h3>
+                    <p>Investigating fundamental physics of electron transport and quantum phenomena in nanostructured materials for next-generation nanoelectronics</p>
+                </div>
+                <div class="area-item fade-in">
+                    <div class="area-number">04</div>
+                    <h3>2D Materials & Heterostructures</h3>
+                    <p>Engineering atomically-thin materials with unique electronic and optical properties. The platform for future nanoelectronics and low-dimensional physics</p>
+                </div>
+                <div class="area-item fade-in">
+                    <div class="area-number">05</div>
+                    <h3>Spin Phenomena & Magnetics</h3>
+                    <p>Harnessing spin-orbit torques and magnetic phenomena for low-power computing devices with fundamentally new physics</p>
+                </div>
+                <div class="area-item fade-in">
+                    <div class="area-number">06</div>
+                    <h3>Beyond-CMOS Logic & Memory</h3>
+                    <p>Developing alternative computing paradigms including neuromorphic, quantum, and flexible electronics for energy-efficient information processing</p>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2026 Laboratory for Emerging and Exploratory Devices. Part of UC Berkeley EECS Department.</p>
+            <div class="footer-links">
+                <a href="https://www.berkeley.edu/">Berkeley</a>
+                <a href="https://eecs.berkeley.edu/">EECS Department</a>
+                <a href="https://leed.eecs.berkeley.edu/">LEED Legacy Site</a>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
