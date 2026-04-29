@@ -165,36 +165,20 @@
             let currentStartIndex = 0;
 
             function renderStudentCarousel() {
-                const numToShow = Math.min(3, content.students.length);
-                const visibleStudents = [];
-                for (let i = 0; i < numToShow; i++) {
-                    const idx = (currentStartIndex + i) % content.students.length;
-                    visibleStudents.push(content.students[idx]);
-                }
-
                 return `
                     <div class="student-carousel">
                         <h3>Team Members</h3>
                         <div class="carousel-wrapper">
-                            <button class="carousel-arrow carousel-prev" aria-label="Previous students">&lt;</button>
-                            <div class="carousel-content">
-                                <div class="carousel-container">
-                                    <div class="students-grid">
-                                        ${visibleStudents.map(student => `
-                                            <div class="student-card-carousel">
-                                                <img src="${student.image}" alt="${student.name}" class="student-carousel-image">
-                                                <h4>${student.name}</h4>
-                                                <p class="student-title">${student.title}</p>
-                                                <p class="student-bio">${student.bio}</p>
-                                            </div>
-                                        `).join('')}
+                            <div class="students-grid">
+                                ${content.students.map((student, index) => `
+                                    <div class="student-card-carousel" data-index="${index}">
+                                        <img src="${student.image}" alt="${student.name}" class="student-carousel-image">
+                                        <h4>${student.name}</h4>
+                                        <p class="student-title">${student.title}</p>
+                                        <p class="student-bio">${student.bio}</p>
                                     </div>
-                                </div>
-                                <div class="carousel-indicators">
-                                    ${Array.from({ length: content.students.length }).map((_, i) => `<span class="indicator ${i === currentStartIndex ? 'active' : ''}" data-index="${i}"></span>`).join('')}
-                                </div>
+                                `).join('')}
                             </div>
-                            <button class="carousel-arrow carousel-next" aria-label="Next students">&gt;</button>
                         </div>
                     </div>
                 `;
@@ -220,6 +204,21 @@
 
             document.body.appendChild(overlay);
 
+            // Check if carousel overflows and center if it doesn't
+            setTimeout(() => {
+                const carouselWrapper = overlay.querySelector('.carousel-wrapper');
+                const studentsGrid = overlay.querySelector('.students-grid');
+                if (carouselWrapper && studentsGrid) {
+                    // Check if content overflows
+                    const isOverflowing = studentsGrid.scrollWidth > carouselWrapper.clientWidth;
+                    if (!isOverflowing) {
+                        carouselWrapper.classList.add('centered');
+                    }
+                }
+            }, 0);
+
+
+
             function updateCarousel() {
                 const modalContent = overlay.querySelector('.modal-content');
                 const focusAreasList = `<ul class="modal-details">
@@ -238,7 +237,6 @@
                     ${renderStudentCarousel()}
                 `;
 
-                // Reattach event listeners
                 attachCarouselListeners();
                 const newCloseBtn = modalContent.querySelector('.close-button');
                 newCloseBtn.addEventListener('click', function() {
@@ -247,26 +245,96 @@
             }
 
             function attachCarouselListeners() {
-                const newPrevBtn = overlay.querySelector('.carousel-prev');
-                const newNextBtn = overlay.querySelector('.carousel-next');
+                const carouselContent = overlay.querySelector('.carousel-content');
                 const newIndicators = overlay.querySelectorAll('.indicator');
+                const isMobile = window.innerWidth <= 768;
+                const numToShow = isMobile ? 1 : 3;
+                const hasMoreStudents = content.students.length > numToShow;
 
-                newPrevBtn.addEventListener('click', () => {
-                    currentStartIndex = (currentStartIndex - 1 + content.students.length) % content.students.length;
-                    updateCarousel();
-                });
+                let startX = 0;
+                let startY = 0;
+                let isAnimating = false;
 
-                newNextBtn.addEventListener('click', () => {
-                    currentStartIndex = (currentStartIndex + 1) % content.students.length;
-                    updateCarousel();
-                });
+                const animateCarousel = (newIndex) => {
+                    if (isAnimating) return;
 
-                newIndicators.forEach(indicator => {
-                    indicator.addEventListener('click', () => {
-                        currentStartIndex = parseInt(indicator.dataset.index);
-                        updateCarousel();
-                    });
-                });
+                    const carouselWrapper = overlay.querySelector('.carousel-wrapper');
+                    if (!carouselWrapper) return;
+
+                    // Calculate target scroll position: each card is 250px + 32px gap = 282px
+                    const targetScroll = newIndex * 282;
+                    
+                    isAnimating = true;
+                    currentStartIndex = newIndex;
+                    carouselWrapper.scrollLeft = targetScroll;
+                    isAnimating = false;
+                };
+
+                if (carouselContent && hasMoreStudents && !isMobile) {
+                    let swipeStartTime = 0;
+                    
+                    const handleStart = (e) => {
+                        if (isAnimating) return;
+                        startX = e.type.includes('touch') ? e.touches[0].clientX : e.clientX;
+                        startY = e.type.includes('touch') ? e.touches[0].clientY : e.clientY;
+                        swipeStartTime = Date.now();
+                    };
+
+                    const handleEnd = (e) => {
+                        if (isAnimating) return;
+                        const endX = e.type.includes('touch') ? e.changedTouches[0].clientX : e.clientX;
+                        const endY = e.type.includes('touch') ? e.changedTouches[0].clientY : e.clientY;
+                        const diff = startX - endX;
+                        const verticalDiff = Math.abs(startY - endY);
+                        const threshold = 50;
+
+                        // Calculate velocity based on total swipe distance and time
+                        const totalTime = Date.now() - swipeStartTime;
+                        const velocity = diff / totalTime; // pixels per millisecond
+
+                        // Only register as swipe if mostly horizontal movement
+                        if (Math.abs(diff) > threshold && verticalDiff < threshold) {
+                            let targetIndex = currentStartIndex;
+                            
+                            if (diff > 0) {
+                                // Swiped left, go to next
+                                targetIndex = currentStartIndex + 1;
+                            } else {
+                                // Swiped right, go to previous
+                                targetIndex = currentStartIndex - 1;
+                            }
+                            
+                            // Add inertia: if velocity is high, scroll further
+                            // velocity is pixels/ms, so multiply by a factor to get card increments
+                            const inertiaMultiplier = 0.15; // adjust this to control inertia strength
+                            const maxInertiaCards = Math.floor(Math.abs(velocity) * inertiaMultiplier);
+                            if (maxInertiaCards > 0) {
+                                if (diff > 0) {
+                                    targetIndex = Math.min(targetIndex + maxInertiaCards, content.students.length - numToShow);
+                                } else {
+                                    targetIndex = Math.max(targetIndex - maxInertiaCards, 0);
+                                }
+                            }
+                            
+                            targetIndex = Math.max(0, Math.min(targetIndex, content.students.length - numToShow));
+                            
+                            if (targetIndex !== currentStartIndex) {
+                                animateCarousel(targetIndex);
+                            }
+                        }
+                    };
+
+                    // Touch events
+                    carouselContent.addEventListener('touchstart', handleStart, { passive: true });
+                    carouselContent.addEventListener('touchend', handleEnd, { passive: true });
+
+                    // Mouse events for desktop testing
+                    carouselContent.addEventListener('mousedown', handleStart);
+                    carouselContent.addEventListener('mousemove', handleMove);
+                    carouselContent.addEventListener('mouseup', handleEnd);
+                }
+
+
             }
 
             // Initial event listeners

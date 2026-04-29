@@ -402,6 +402,14 @@ section:nth-child(even) {
     margin-bottom: calc(var(--spacing) * 1);
 }
 
+.pub-section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: calc(var(--spacing) * 1.5);
+    margin-top: calc(var(--spacing) * 2);
+    color: var(--text-dark);
+}
+
 .section-description {
     font-size: 1.2rem;
     color: var(--text-light);
@@ -609,9 +617,41 @@ section:nth-child(even) {
 
 .carousel-wrapper {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    gap: calc(var(--spacing) * 2);
+    padding: calc(var(--spacing) * 0.5) 0;
+    -webkit-overflow-scrolling: auto;
+    /* Subtle thin scrollbar */
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-light) transparent;
+}
+
+.carousel-wrapper::-webkit-scrollbar {
+    height: 1px;
+}
+
+.carousel-wrapper::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.carousel-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--border-light);
+}
+
+.carousel-wrapper::-webkit-scrollbar-thumb:hover {
+    background-color: var(--text-muted);
+}
+
+.carousel-wrapper.centered {
     justify-content: center;
-    gap: calc(var(--spacing) * 1.5);
+    padding: calc(var(--spacing) * 0.5);
+}
+
+.carousel-wrapper::-webkit-scrollbar {
+    display: none;
 }
 
 .carousel-content {
@@ -623,10 +663,8 @@ section:nth-child(even) {
 
 .students-grid {
     display: flex;
-    justify-content: center;
     gap: calc(var(--spacing) * 2);
     flex-wrap: nowrap;
-    min-width: 0;
 }
 
 .carousel-arrow {
@@ -663,6 +701,8 @@ section:nth-child(even) {
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
+    scroll-snap-align: center;
+    scroll-snap-stop: always;
 }
 
 .student-carousel-image {
@@ -694,10 +734,7 @@ section:nth-child(even) {
 }
 
 .carousel-indicators {
-    display: flex;
-    justify-content: center;
-    gap: calc(var(--spacing) * 0.5);
-    flex-wrap: wrap;
+    display: none;
 }
 
 .indicator {
@@ -767,48 +804,6 @@ section:nth-child(even) {
 }
 
 @media (max-width: 768px) {
-    .carousel-container {
-        gap: calc(var(--spacing) * 1);
-        flex-wrap: wrap;
-    }
-
-    .carousel-arrow {
-        width: 25px;
-        min-height: auto;
-        height: auto;
-        font-size: 1.5rem;
-    }
-
-    .carousel-prev {
-        order: 1;
-    }
-
-    .carousel-next {
-        order: 3;
-    }
-
-    .students-grid {
-        gap: calc(var(--spacing) * 1.5);
-        order: 4;
-        width: 100%;
-    }
-
-    .student-carousel-image {
-        width: 200px;
-        height: 200px;
-    }
-
-    .student-card-carousel h4 {
-        font-size: 0.95rem;
-    }
-
-    .student-title {
-        font-size: 0.75rem;
-    }
-
-    .student-bio {
-        font-size: 0.8rem;
-    }
 }
 
 /* Research Areas */
@@ -1055,6 +1050,14 @@ section:nth-child(even) {
     font-weight: 300;
 }
 
+.alumni-co-advised {
+    color: var(--accent-blue);
+    font-weight: 500;
+    display: inline;
+    margin-left: 8px;
+    font-size: 0.9rem;
+}
+
 .alumni-note {
     margin-top: calc(var(--spacing) * 1.5);
     font-size: 0.9rem;
@@ -1201,6 +1204,7 @@ section:nth-child(even) {
 }
 
 .pub-item {
+    display: block;
     padding: calc(var(--spacing) * 3);
     margin-bottom: calc(var(--spacing) * 2);
     background: var(--bg-lighter);
@@ -1208,6 +1212,8 @@ section:nth-child(even) {
     border-left: 6px solid var(--accent-blue);
     position: relative;
     transition: all 0.3s ease;
+    text-decoration: none;
+    color: inherit;
 }
 
 .pub-item:hover {
@@ -1233,6 +1239,27 @@ section:nth-child(even) {
 .pub-item p {
     font-size: 0.95rem;
     margin-bottom: calc(var(--spacing) * 0.5);
+}
+
+.pub-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: calc(var(--spacing) * 0.75);
+    color: var(--accent-blue);
+}
+
+.pub-description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: calc(var(--spacing) * 0.75);
+    color: var(--text-light);
+}
+
+.pub-meta {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--text-muted);
+    margin-bottom: 0;
 }
 
 .pub-venue {
