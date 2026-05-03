@@ -112,6 +112,12 @@ self.addEventListener('fetch', (event) => {
             return response;
           }
 
+          // Only cache HTTP and HTTPS requests
+          const url = new URL(request.url);
+          if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+            return response;
+          }
+
           // Clone the response and cache it
           const responseToCache = response.clone();
           caches.open(CACHE_NAME)
