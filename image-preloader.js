@@ -48,31 +48,39 @@
     'content/goofy6.png',
   ];
 
-  // Preload images in batches to avoid overwhelming the browser
+  let alreadyPreloaded = false;
+
   function preloadImages() {
-    const preloadBatchSize = 5;
-    let currentBatch = 0;
+    if (alreadyPreloaded) return;
+    alreadyPreloaded = true;
+    // Preload images in batches to avoid overwhelming the browser
+    function preloadBatch() {
+      const preloadBatchSize = 5;
+      let currentBatch = 0;
 
-    function loadBatch() {
-      const start = currentBatch * preloadBatchSize;
-      const end = Math.min(start + preloadBatchSize, imagesToPreload.length);
+      function loadBatch() {
+        const start = currentBatch * preloadBatchSize;
+        const end = Math.min(start + preloadBatchSize, imagesToPreload.length);
 
-      for (let i = start; i < end; i++) {
-        const img = new Image();
-        img.src = imagesToPreload[i];
+        for (let i = start; i < end; i++) {
+          const img = new Image();
+          img.src = imagesToPreload[i];
+        }
+
+        currentBatch++;
+
+        // Load next batch after a short delay
+        if (end < imagesToPreload.length) {
+          setTimeout(loadBatch, 100);
+        } else {
+          console.log('All images preloaded');
+        }
       }
 
-      currentBatch++;
-
-      // Load next batch after a short delay
-      if (end < imagesToPreload.length) {
-        setTimeout(loadBatch, 100);
-      } else {
-        console.log('All images preloaded');
-      }
+      loadBatch();
     }
 
-    loadBatch();
+    preloadBatch();
   }
 
   // Start preloading when page is fully loaded
@@ -83,5 +91,5 @@
   }
 
   // Also preload on window load to catch any lazy images
-  window.addEventListener('load', preloadImages);
+  // window.addEventListener('load', preloadImages);
 })();
